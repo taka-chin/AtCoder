@@ -1,0 +1,24 @@
+services:
+  atcoder:
+    build: .
+    container_name: atcoder
+    working_dir: /workspace
+    volumes:
+      - ./workspace:/workspace
+      - atcoder_config:/root/.config/atcoder-cli-nodejs
+      - oj_cookie:/root/.local/share/online-judge-tools
+      - ~/.vimrc:/root/.vimrc:ro
+      - ~/.vim:/root/.vim:ro
+      - ~/.tmux.conf:/root/.tmux.conf:ro
+      - vim_lsp_settings:/root/.local/share/vim-lsp-settings
+      - vim_cache:/root/.cache
+      - vim_undo:/root/.vim/undo
+    tty: true
+    stdin_open: true
+
+volumes:
+  atcoder_config:
+  oj_cookie:
+  vim_lsp_settings:
+  vim_cache:
+  vim_undo:
