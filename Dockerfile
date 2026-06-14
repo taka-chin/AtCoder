@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     gdb \
     clangd \
+	clang-format \
     git \
     curl \
     ca-certificates \
@@ -17,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     tmux \
-    vim \
+    vim-gtk3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pipx install online-judge-tools --include-deps \
