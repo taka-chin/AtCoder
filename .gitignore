@@ -1,0 +1,11 @@
+# Nix
+.npm-global/
+
+# macOS
+.DS_Store
+
+# AtCoder workspace
+workspace/
+input*
+
+

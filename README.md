@@ -1,33 +1,51 @@
-# AtCoder Docker 開発環境
+# AtCoder 開発環境
 
-## 概要
+AtCoder 用の C++ 開発環境です。
 
-AtCoder 用の C++ 開発環境。
+以下の 2 つの環境を用意しています。
 
-以下を利用する。
-
-* Docker
-* atcoder-cli (acc)
-* online-judge-tools (oj)
-* GCC
-* GDB
-* clangd
-* Vim
-* tmux
+- Docker（Ubuntu 環境を再現）
+- Nix（macOS ネイティブ環境）
 
 ---
 
-## 初回セットアップ
+# 使用ツール
 
-Docker イメージを作成する。
+- C++23
+- clang / clang++
+- clangd
+- lldb（macOS）
+- atcoder-cli (acc)
+- online-judge-tools (oj)
+- Vim
+- tmux
+
+---
+
+# ディレクトリ構成
+
+```text
+.
+├── Dockerfile
+├── docker-compose.yml
+├── flake.nix
+├── flake.lock
+└── workspace/
+```
+
+---
+
+# Docker 環境
+
+## 初回セットアップ
 
 ```bash
 docker compose build
 ```
 
-Dockerfile を変更した場合のみ再度実行する。
+Dockerfile を変更した場合のみ再実行します。
 
-キャッシュを無視して再構築したい場合のみ：
+キャッシュを無視する場合
 
 ```bash
 docker compose build --no-cache
@@ -41,7 +59,7 @@ docker compose build --no-cache
 docker compose run --rm atcoder
 ```
 
-終了：
+終了
 
 ```bash
 exit
@@ -51,71 +69,95 @@ exit
 
 ## 疎通確認
 
-### GCC
-
 ```bash
 g++ --version
-```
-
-### GDB
-
-```bash
 gdb --version
-```
-
-### clangd
-
-```bash
 clangd --version
-```
-
-### atcoder-cli
-
-```bash
+oj --version
 acc --version
 ```
 
-期待値：
+---
 
-```text
-2.2.0
-```
+# Nix 環境（macOS 推奨）
 
-### online-judge-tools
+## 初回セットアップ
+
+Nix をインストールします。
 
 ```bash
-oj --version
+nix --version
 ```
 
-期待値：
+初回のみ lock ファイルを生成します。
+
+```bash
+nix develop
+```
+
+---
+
+## 起動
+
+```bash
+nix develop
+```
+
+終了
+
+```bash
+exit
+```
+
+---
+
+## 疎通確認
+
+```bash
+type -a clang
+type -a clang++
+type -a clangd
+type -a lldb
+type -a python3
+type -a oj
+type -a acc
+```
+
+Nix 管理されているツールは
 
 ```text
-online-judge-tools 11.5.1
+/nix/store/...
 ```
 
-### AtCoderログイン確認
+から実行されます。
+
+---
+
+# AtCoder ログイン
+
+確認
 
 ```bash
 oj login --check https://atcoder.jp/
 ```
 
-成功例：
+ログイン
 
-```text
-[SUCCESS] You have already signed in.
+```bash
+oj login https://atcoder.jp/
 ```
 
 ---
 
-## 問題取得
+# 問題取得
 
 ```bash
-cd /workspace
+cd workspace
 
 acc new abc460
 ```
 
-問題ディレクトリへ移動：
+問題へ移動
 
 ```bash
 cd abc460/a
@@ -123,15 +165,23 @@ cd abc460/a
 
 ---
 
-## サンプルテスト
+# コンパイル
 
-コンパイル：
+## Docker
 
 ```bash
 g++ -std=c++23 main.cpp
 ```
 
-サンプル実行：
+## Nix
+
+```bash
+clang++ -std=c++23 main.cpp
+```
+
+---
+
+# サンプルテスト
 
 ```bash
 oj t
@@ -139,15 +189,13 @@ oj t
 
 ---
 
-## 提出
-
-通常：
+# 提出
 
 ```bash
 acc submit main.cpp
 ```
 
-または：
+または
 
 ```bash
 oj submit \
@@ -157,45 +205,28 @@ oj submit \
   -y
 ```
 
-### 注意
+> AtCoder 側で CAPTCHA / Cloudflare Turnstile が有効な場合は CLI 提出できないことがあります。
+> その場合はブラウザから提出してください。
 
-AtCoder 側で CAPTCHA / Cloudflare Turnstile が有効な場合、
+---
+
+# Vim / tmux
+
+Docker 環境ではホストの設定をマウントします。
 
 ```text
-× Error.
-submission failed
+~/.vimrc
+~/.vim
+~/.tmux.conf
 ```
 
-となり CLI 提出が失敗することがある。
-
-その場合はブラウザから提出する。
+Nix 環境ではホストの設定がそのまま利用されます。
 
 ---
 
-## Vim / tmux
+# Git
 
-ホストの設定ファイルを利用する。
-
-```yaml
-- ~/.vimrc:/root/.vimrc:ro
-- ~/.vim:/root/.vim
-- ~/.tmux.conf:/root/.tmux.conf:ro
-```
-
-### 既知の問題
-
-* Iceberg の colorscheme が起動直後に正しく反映されない場合がある
-* Vim の undo ディレクトリが存在しない場合は作成する
-
-```bash
-mkdir -p ~/.vim/undo
-```
-
----
-
-## Git
-
-コンテナ内から利用可能。
+通常どおり利用できます。
 
 ```bash
 git status
@@ -203,61 +234,84 @@ git pull
 git push
 ```
 
-推奨設定：
+---
 
-```yaml
-- ~/.gitconfig:/root/.gitconfig:ro
-- ~/.ssh:/root/.ssh:ro
+# 永続化されるデータ
+
+## Docker
+
+### Volume
+
+- atcoder_config
+- oj_cookie
+- vim_lsp_settings
+- vim_cache
+- vim_undo
+
+### ホスト
+
+- workspace
+- ~/.vim
+- ~/.vimrc
+- ~/.tmux.conf
+
+---
+
+## Nix
+
+ホスト側に保存されます。
+
+```text
+workspace/
+~/.config/atcoder-cli-nodejs
+~/.local/share/online-judge-tools
+~/.vim
+~/.vimrc
+~/.tmux.conf
 ```
 
 ---
 
-## 永続化されるデータ
+# よく使うコマンド
 
-### Docker Volume
-
-* atcoder_config
-* oj_cookie
-
-### ホスト共有
-
-* workspace
-* ~/.vim
-* ~/.vimrc
-* ~/.tmux.conf
-* ~/.gitconfig
-* ~/.ssh
-
----
-
-## よく使うコマンド
-
-### コンテナ起動
+## Docker 起動
 
 ```bash
 docker compose run --rm atcoder
 ```
 
-### 問題作成
+## Nix 起動
+
+```bash
+nix develop
+```
+
+## 問題取得
 
 ```bash
 acc new abc460
 ```
 
-### サンプルテスト
+## サンプルテスト
 
 ```bash
 oj t
 ```
 
-### 提出
+## 提出
 
 ```bash
 acc submit main.cpp
 ```
 
-### ログイン確認
+## ログイン確認
 
 ```bash
 oj login --check https://atcoder.jp/
+```
+
+## 終了
+
+```bash
+exit
 ```
