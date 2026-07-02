@@ -55,6 +55,11 @@
             fi
 
             echo
+            echo "    ####  ##### #   # "
+            echo "   #   # #     #   #  "
+            echo "  #   # ####  #   #   "
+            echo " #   # #      # #     "
+            echo "####  #####   #       "
             echo "==============================="
             echo "AtCoder development environment"
             echo "==============================="
