@@ -3,21 +3,21 @@
 
 using namespace std;
 
-bool is_check(const string& S) {
-  int count = 0;
-  for (auto &c : S) {
+bool isVaildParentheses(const string& S) {
+  int balance = 0;
+  for (char c : S) {
     if (c == '(')
-      count++;
+      balance++;
     else
-      count--;
-    if (count < 0) return false;
+      balance--;
+    if (balance < 0) return false;
   }
-  if (count != 0) return false;
+  if (balance != 0) return false;
   return true;
 }
 
 int main() {
-  int N ;
+  int N;
   cin >> N;
   // Nbit全探索
   for (int bit = 0; bit < (1 << N); bit++) {
@@ -28,6 +28,6 @@ int main() {
       else
         S += ')';
     }
-    if (is_check(S)) cout << S << endl;
+    if (isVaildParentheses(S)) cout << S << endl;
   }
 }
